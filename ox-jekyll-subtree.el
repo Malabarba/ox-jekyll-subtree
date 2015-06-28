@@ -122,8 +122,8 @@ will be a sanitised version of the title, see
            header-content subtree-content reference-buffer)
 
           ;; Export and then do some fixing on the output buffer.
-          (with-current-buffer
-              (org-jekyll-export-as-html nil t nil nil nil)
+          (org-jekyll-export-as-html nil t nil nil nil)
+          (with-current-buffer "*Org Jekyll HTML Export*"
             (goto-char (point-min))
             ;; Configure the jekyll header.
             (search-forward "\n---\n")
