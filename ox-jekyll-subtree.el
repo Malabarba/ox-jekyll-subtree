@@ -214,7 +214,7 @@ will be a sanitised version of the title, see
            (format "/%s.html" (endless/strip-date-from-filename target-filename))
            :fixedcase :literal nil 1))))))
   (goto-char (point-min))
-  (search-forward "\n*"))
+  (search-forward "\n*" nil 'noerror))
 
 (defun endless/strip-date-from-filename (name)
   (replace-regexp-in-string "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-" "" name))
