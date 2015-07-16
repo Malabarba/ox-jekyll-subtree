@@ -62,9 +62,9 @@ Will be stripped from links addresses on the final HTML."
 Posts need very little to work, most information is guessed.
 Scheduled date is respected and heading is marked as DONE.
 
-Pages are marked by a \":type: page\" property, and they also
-need a :filename: property. Schedule is then ignored, and the
-file is saved inside `endless/blog-dir'.
+Pages are marked by a \":EXPORT_JEKYLL_LAYOUT: page\" property,
+and they also need a :filename: property. Schedule is then
+ignored, and the file is saved inside `endless/blog-dir'.
 
 The filename property is not mandatory for posts. If present, it
 will used exactly (no sanitising will be done). If not, filename
@@ -77,13 +77,13 @@ will be a sanitised version of the title, see
     ;; reach one.
     (while (null (org-entry-get (point) "TODO" nil t))
       (outline-up-heading 1 t))
-    (org-entry-put (point) "JEKYLL_LAYOUT"
-                   (org-entry-get (point) "JEKYLL_LAYOUT" t))
+    (org-entry-put (point) "EXPORT_JEKYLL_LAYOUT"
+                   (org-entry-get (point) "EXPORT_JEKYLL_LAYOUT" t))
 
     (let* ((date (org-get-scheduled-time (point) nil))
            (tags (nreverse (org-get-tags-at)))
            (meta-title (org-entry-get (point) "meta_title"))
-           (is-page (string= (org-entry-get (point) "JEKYLL_LAYOUT") "page"))
+           (is-page (string= (org-entry-get (point) "EXPORT_JEKYLL_LAYOUT") "page"))
            (name (org-entry-get (point) "filename"))
            (title (org-get-heading t t))
            (series (org-entry-get (point) "series" t))
@@ -214,7 +214,7 @@ will be a sanitised version of the title, see
            (format "/%s.html" (endless/strip-date-from-filename target-filename))
            :fixedcase :literal nil 1))))))
   (goto-char (point-min))
-  (search-forward "\n*" nil 'noerror))
+  (outline-next-heading))
 
 (defun endless/strip-date-from-filename (name)
   (replace-regexp-in-string "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-" "" name))
