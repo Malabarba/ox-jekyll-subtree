@@ -44,6 +44,8 @@
 
 ;;; Code:
 
+(require 'org)
+(require 'ox-jekyll)
 (require 'subr-x)
 
 (defcustom endless/blog-dir (expand-file-name "~/Git-Projects/blog/")
@@ -71,7 +73,6 @@ will used exactly (no sanitising will be done). If not, filename
 will be a sanitised version of the title, see
 `endless/sanitise-file-name'."
   (interactive "P")
-  (require 'ox-jekyll)
   (save-excursion
     ;; Actual posts NEED a TODO state. So we go up the tree until we
     ;; reach one.
@@ -240,5 +241,5 @@ And transforms anything that's not alphanumeric into dashes."
       (replace-regexp-in-string
        "(.*)" "" name))))))
 
-(provide 'ox-jekyll-subtrees)
+(provide 'ox-jekyll-subtree)
 ;;; ox-jekyll-subtree.el ends here
