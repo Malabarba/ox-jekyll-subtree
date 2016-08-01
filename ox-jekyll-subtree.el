@@ -80,8 +80,12 @@ will be a sanitised version of the title, see
       (outline-up-heading 1 t))
     (org-entry-put (point) "EXPORT_JEKYLL_LAYOUT"
                    (org-entry-get (point) "EXPORT_JEKYLL_LAYOUT" t))
-
-    (let* ((date (org-get-scheduled-time (point) nil))
+    ;; Try the closed stamp first to make sure we don't set the front
+    ;; matter to 00:00:00 which moves the post back a day
+    (let* ((closed-stamp (org-entry-get (point) "CLOSED" t))
+           (date (if closed-stamp
+                     (date-to-time closed-stamp)
+                     (org-get-scheduled-time (point) nil)))
            (tags (nreverse (org-get-tags-at)))
            (meta-title (org-entry-get (point) "meta_title"))
            (is-page (string= (org-entry-get (point) "EXPORT_JEKYLL_LAYOUT") "page"))
