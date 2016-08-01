@@ -103,10 +103,9 @@ will be a sanitised version of the title, see
               (error "Pages need a :filename: property"))
         ;; For posts, guess some information that wasn't provided as
         ;; properties.
-        (setq date (format-time-string "%Y-%m-%d" date))
         ;; Define a name, if there isn't one.
         (unless name
-          (setq name (concat date "-" (endless/sanitise-file-name title)))
+          (setq name (concat (format-time-string "%Y-%m-%d" date) "-" (endless/sanitise-file-name title)))
           (org-entry-put (point) "filename" name))
         (org-todo 'done))
 
@@ -137,7 +136,7 @@ will be a sanitised version of the title, see
             (if is-page
                 ;; Pages don't need a date field.
                 (replace-match "" :fixedcase :literal nil 0)
-              (replace-match (concat " " date) :fixedcase :literal nil 1))
+              (replace-match (concat " " (format-time-string "%Y-%m-%d %T" date)) :fixedcase :literal nil 1))
 
             ;; Save the final file.
             (endless/clean-output-links)
