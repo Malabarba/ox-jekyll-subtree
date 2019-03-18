@@ -14,7 +14,7 @@ repo (a copy is provided in this repo).
 Place this in your `load-path`, add the following lines to your init file, and invoke `M-x endless/export-to-blog` to export a subtree as a blog post.
 
 ```
-(autoload 'endless/export-to-blog "jekyll-once")
+(autoload 'endless/export-to-blog "ox-jekyll-subtree")
 (setq org-jekyll-use-src-plugin t)
 
 ;; Obviously, these two need to be changed for your blog.
