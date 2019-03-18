@@ -92,10 +92,7 @@ will be a sanitised version of the title, see
            (name (org-entry-get (point) "filename"))
            (title (org-get-heading t t))
            (series (org-entry-get (point) "series" t))
-           (org-jekyll-categories
-            (mapconcat
-             (lambda (tag) (ojx-convert-tag tag))
-             tags " "))
+           (org-jekyll-categories (mapconcat #'ojx-convert-tag tags " "))
            (org-export-show-temporary-export-buffer nil))
 
       (unless date
