@@ -90,9 +90,8 @@ makes:
 
 
 ;;; Define Back-End
-
 (org-export-define-derived-backend 'jekyll 'html
-  :export-block '("HTML" "JEKYLL")
+  ;; :export-block '("HTML" "JEKYLL")
   :menu-entry
   '(?j "Jekyll: export to HTML with YAML front matter."
        ((?H "As HTML buffer" org-jekyll-export-as-html)
