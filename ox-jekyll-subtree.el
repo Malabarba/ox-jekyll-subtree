@@ -31,45 +31,45 @@
 ;;
 ;;; Usage
 ;;
-;; Place this in your `load-path`, add the following lines to your init file, and invoke `M-x ojx-export-to-blog` to export a subtree as a blog post.
+;; Place this in your `load-path`, add the following lines to your init file, and invoke `M-x ojs-export-to-blog` to export a subtree as a blog post.
 ;;
 ;; ```
-;; (autoload 'ojx-export-to-blog "jekyll-once")
+;; (autoload 'ojs-export-to-blog "jekyll-once")
 ;; (setq org-jekyll-use-src-plugin t)
 ;;
 ;; ;; Obviously, these two need to be changed for your blog.
-;; (setq ojx-blog-base-url "http://endlessparentheses.com/")
-;; (setq ojx-blog-dir (expand-file-name "~/Git-Projects/blog/"))
+;; (setq ojs-blog-base-url "http://endlessparentheses.com/")
+;; (setq ojs-blog-dir (expand-file-name "~/Git/blog/"))
 ;; ```
 
 ;;; Code:
 
 (require 'subr-x)
 
-(defcustom ojx-blog-dir (expand-file-name "~/Git-Projects/blog/")
+(defcustom ojs-blog-dir (expand-file-name "~/Git/blog/")
   "Directory to save posts."
   :type 'directory
   :group 'endless)
 
-(defcustom ojx-blog-base-url "http://endlessparentheses.com/"
+(defcustom ojs-blog-base-url "http://endlessparentheses.com/"
   "Base URL of the blog.
 Will be stripped from link addresses on the final HTML."
   :type 'string
   :group 'endless)
 
-(defun ojx-export-to-blog (dont-show)
+(defun ojs-export-to-blog (dont-show)
   "Exports current subtree as jekyll html and copies to blog.
 Posts need very little to work, most information is guessed.
 Scheduled date is respected and heading is marked as DONE.
 
 Pages are marked by a \":EXPORT_JEKYLL_LAYOUT: page\" property,
 and they also need a :filename: property. Schedule is then
-ignored, and the file is saved inside `ojx-blog-dir'.
+ignored, and the file is saved inside `ojs-blog-dir'.
 
 The filename property is not mandatory for posts. If present, it
 will used exactly (no sanitising will be done). If not, filename
 will be a sanitised version of the title, see
-`ojx-sanitise-file-name'."
+`ojs-sanitise-file-name'."
   (interactive "P")
   (require 'org)
   (require 'ox-jekyll)
@@ -92,7 +92,7 @@ will be a sanitised version of the title, see
            (name (org-entry-get (point) "filename"))
            (title (org-get-heading t t))
            (series (org-entry-get (point) "series" t))
-           (org-jekyll-categories (mapconcat #'ojx-convert-tag tags " "))
+           (org-jekyll-categories (mapconcat #'ojs-convert-tag tags " "))
            (org-export-show-temporary-export-buffer nil))
 
       (unless date
@@ -100,13 +100,12 @@ will be a sanitised version of the title, see
         (setq date (current-time)))
       ;; For pages, demand filename.
       (if is-page
-          (if (null name)
-              (error "Pages need a :filename: property"))
+          (unless name (error "Pages need a :filename: property"))
         ;; For posts, guess some information that wasn't provided as
         ;; properties.
         ;; Define a name, if there isn't one.
         (unless name
-          (setq name (concat (format-time-string "%Y-%m-%d" date) "-" (ojx-sanitise-file-name title)))
+          (setq name (concat (format-time-string "%Y-%m-%d" date) "-" (ojs-sanitise-file-name title)))
           (org-entry-put (point) "filename" name))
         (org-todo 'done))
 
@@ -116,10 +115,10 @@ will be a sanitised version of the title, see
                (ignore-errors (ispell-buffer))
                (buffer-string)))
             (header-content
-             (ojx-get-org-headers))
+             (ojs-get-org-headers))
             (reference-buffer (current-buffer)))
         (with-temp-buffer
-          (ojx-prepare-input-buffer
+          (ojs-prepare-input-buffer
            header-content subtree-content reference-buffer)
 
           ;; Export and then do some fixing on the output buffer.
@@ -140,10 +139,10 @@ will be a sanitised version of the title, see
               (replace-match (concat " " (format-time-string "%Y-%m-%d %T" date)) :fixedcase :literal nil 1))
 
             ;; Save the final file.
-            (ojx-clean-output-links)
+            (ojs-clean-output-links)
             (let ((out-file
                    (expand-file-name (concat (if is-page "" "_posts/") name ".html")
-                                     ojx-blog-dir)))
+                                     ojs-blog-dir)))
               (write-file out-file)
               (unless dont-show
                 (find-file-other-window out-file)))
@@ -152,19 +151,19 @@ will be a sanitised version of the title, see
             (kill-new (concat "UPDATE: " title))
             (kill-new (concat "POST: " title))))))))
 
-(defun ojx-get-org-headers ()
+(defun ojs-get-org-headers ()
   "Return everything above the first headline of current buffer."
   (save-excursion
     (goto-char (point-min))
     (search-forward-regexp "^\\*+ ")
     (buffer-substring-no-properties (point-min) (match-beginning 0))))
 
-(defvar ojx-base-regexp
-  (macroexpand `(rx (or ,ojx-blog-base-url ,ojx-blog-dir)))
+(defvar ojs-base-regexp
+  (macroexpand `(rx (or ,ojs-blog-base-url ,ojs-blog-dir)))
   "")
 
-(defun ojx-clean-output-links ()
-  "Strip `ojx-blog-base-url' and \"file://\" from the start of URLs. "
+(defun ojs-clean-output-links ()
+  "Strip `ojs-blog-base-url' and \"file://\" from the start of URLs. "
   ;; Fix org's stupid filename handling.
   (goto-char (point-min))
   (while (search-forward-regexp "\\(href\\|src\\)=\"\\(file://\\)/" nil t)
@@ -172,12 +171,12 @@ will be a sanitised version of the title, see
   ;; Strip base-url from links
   (goto-char (point-min))
   (while (search-forward-regexp
-          (concat "href=\"" ojx-base-regexp)
+          (concat "href=\"" ojs-base-regexp)
           nil t)
     (replace-match "href=\"/" :fixedcase :literal))
   (goto-char (point-min)))
 
-(defun ojx-prepare-input-buffer (header content reference-buffer)
+(defun ojs-prepare-input-buffer (header content reference-buffer)
   "Insert content and clean it up a bit."
   (insert header content)
   (goto-char (point-min))
@@ -189,7 +188,7 @@ will be a sanitised version of the title, see
                   (not org-link-search-failed))
       (cond
        ((looking-at (format "\\[\\[\\(file:%s\\)"
-                            (regexp-quote (abbreviate-file-name ojx-blog-dir))))
+                            (regexp-quote (abbreviate-file-name ojs-blog-dir))))
         (replace-match "file:/" nil nil nil 1)
         (goto-char (match-beginning 0))
         (when (looking-at (rx "[[" (group "file:/images/" (+ (not space))) "]]"))
@@ -213,21 +212,21 @@ will be a sanitised version of the title, see
         (when (and target-filename
                    (null (string= target-filename this-filename)))
           (replace-match
-           (format "/%s.html" (ojx-strip-date-from-filename target-filename))
+           (format "/%s.html" (ojs-strip-date-from-filename target-filename))
            :fixedcase :literal nil 1))))))
   (goto-char (point-min))
   (outline-next-heading))
 
-(defun ojx-strip-date-from-filename (name)
+(defun ojs-strip-date-from-filename (name)
   (replace-regexp-in-string "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-" "" name))
 
-(defun ojx-convert-tag (tag)
+(defun ojs-convert-tag (tag)
   "Overcome org-mode's tag limitations."
   (replace-regexp-in-string
    "_" "-"
    (replace-regexp-in-string "__" "." tag)))
 
-(defun ojx-sanitise-file-name (name)
+(defun ojs-sanitise-file-name (name)
   "Make NAME safe for filenames.
 Removes any occurrence of parentheses (with their content),
 Trims the result,

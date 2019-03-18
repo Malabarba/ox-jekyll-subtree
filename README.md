@@ -11,13 +11,13 @@ repo (a copy is provided in this repo).
 
 ## Usage
 
-Place this in your `load-path`, add the following lines to your init file, and invoke `M-x ojx-export-to-blog` to export a subtree as a blog post.
+Place this in your `load-path`, add the following lines to your init file, and invoke `M-x ojs-export-to-blog` to export a subtree as a blog post.
 
 ```
-(autoload 'ojx-export-to-blog "ox-jekyll-subtree")
+(autoload 'ojs-export-to-blog "ox-jekyll-subtree")
 (setq org-jekyll-use-src-plugin t)
 
 ;; Obviously, these two need to be changed for your blog.
-(setq ojx-blog-base-url "http://endlessparentheses.com/")
-(setq ojx-blog-dir (expand-file-name "~/Git-Projects/blog/"))
+(setq ojs-blog-base-url "http://endlessparentheses.com/")
+(setq ojs-blog-dir (expand-file-name "~/Git-Projects/blog/"))
 ```
