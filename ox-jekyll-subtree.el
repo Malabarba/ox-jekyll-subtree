@@ -55,7 +55,7 @@
 
 (defcustom endless/blog-base-url "http://endlessparentheses.com/"
   "Base URL of the blog.
-Will be stripped from links addresses on the final HTML."
+Will be stripped from link addresses on the final HTML."
   :type 'string
   :group 'endless)
 
@@ -85,7 +85,7 @@ will be a sanitised version of the title, see
     (let* ((closed-stamp (org-entry-get (point) "CLOSED" t))
            (date (if closed-stamp
                      (date-to-time closed-stamp)
-                     (org-get-scheduled-time (point) nil)))
+                   (org-get-scheduled-time (point) nil)))
            (tags (nreverse (org-get-tags-at)))
            (meta-title (org-entry-get (point) "meta_title"))
            (is-page (string= (org-entry-get (point) "EXPORT_JEKYLL_LAYOUT") "page"))
@@ -126,8 +126,8 @@ will be a sanitised version of the title, see
            header-content subtree-content reference-buffer)
 
           ;; Export and then do some fixing on the output buffer.
-          (org-jekyll-export-as-html nil t nil nil nil)
-          (with-current-buffer "*Org Jekyll HTML Export*"
+          (with-current-buffer
+              (org-jekyll-export-as-html nil t nil nil nil)
             (goto-char (point-min))
             ;; Configure the jekyll header.
             (search-forward "\n---\n")
@@ -162,8 +162,9 @@ will be a sanitised version of the title, see
     (search-forward-regexp "^\\*+ ")
     (buffer-substring-no-properties (point-min) (match-beginning 0))))
 
-(defconst endless/base-regexp
-  (macroexpand `(rx (or ,endless/blog-base-url ,endless/blog-dir))))
+(defvar endless/base-regexp
+  (macroexpand `(rx (or ,endless/blog-base-url ,endless/blog-dir)))
+  "")
 
 (defun endless/clean-output-links ()
   "Strip `endless/blog-base-url' and \"file://\" from the start of URLs. "
@@ -191,7 +192,7 @@ will be a sanitised version of the title, see
                   (not org-link-search-failed))
       (cond
        ((looking-at (format "\\[\\[\\(file:%s\\)"
-                      (regexp-quote (abbreviate-file-name endless/blog-dir))))
+                            (regexp-quote (abbreviate-file-name endless/blog-dir))))
         (replace-match "file:/" nil nil nil 1)
         (goto-char (match-beginning 0))
         (when (looking-at (rx "[[" (group "file:/images/" (+ (not space))) "]]"))
