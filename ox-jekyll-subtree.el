@@ -185,7 +185,7 @@ will be a sanitised version of the title, see
   (let ((this-filename (org-entry-get nil "filename" t))
         target-filename)
     (while (progn (org-next-link)
-                  (not org-link-search-failed))
+                  (not org-link--search-failed))
       (cond
        ((looking-at (format "\\[\\[\\(file:%s\\)"
                             (regexp-quote (abbreviate-file-name ojs-blog-dir))))
