@@ -57,6 +57,8 @@ Will be stripped from link addresses on the final HTML."
   :type 'string
   :group 'endless)
 
+(defvar ojs--post-date-format "%Y-%m-%d")
+
 (defun ojs-export-to-blog (dont-show)
   "Exports current subtree as jekyll html and copies to blog.
 Posts need very little to work, most information is guessed.
@@ -136,7 +138,8 @@ will be a sanitised version of the title, see
             (if is-page
                 ;; Pages don't need a date field.
                 (replace-match "" :fixedcase :literal nil 0)
-              (replace-match (concat " " (format-time-string "%Y-%m-%d %T" date)) :fixedcase :literal nil 1))
+              (replace-match (concat " " (format-time-string ojs--post-date-format date))
+                             :fixedcase :literal nil 1))
 
             ;; Save the final file.
             (ojs-clean-output-links)
